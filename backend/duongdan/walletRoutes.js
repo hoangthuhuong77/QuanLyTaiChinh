@@ -1,0 +1,1 @@
+const r=require('express').Router(),c=require('../dieukhien/walletController');r.get('/',c.list);r.get('/:id',c.detail);r.post('/',c.create);r.put('/:id',c.update);r.delete('/:id',c.remove);module.exports=r;

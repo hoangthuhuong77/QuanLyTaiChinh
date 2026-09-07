@@ -1,0 +1,1 @@
+import { Header,Screen } from '@/thanhphan/dungchung/UI';import { SavingsForm } from '@/thanhphan/tietkiem/SavingsForm';export default function Add(){return <Screen><Header title="Thêm mục tiêu"/><SavingsForm/></Screen>}

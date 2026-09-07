@@ -1,4 +1,20 @@
-# Welcome to your Expo app 👋
+# Ứng dụng Quản lý Tài chính Cá nhân
+
+Ứng dụng đa nền tảng dùng Expo SDK 57, TypeScript và Expo Router; backend REST dùng Express, MySQL, JWT và bcryptjs.
+
+## Chạy hệ thống
+
+1. Import `backend/database.sql` bằng MySQL Workbench.
+2. Sao chép `backend/.env.example` thành `backend/.env`, điền thông tin MySQL và một `JWT_SECRET` mạnh.
+3. Trong `backend`, chạy `npm install` rồi `npm run dev`.
+4. Sao chép `.env.example` thành `.env`. Với điện thoại thật, thay IP mẫu bằng IP LAN của máy chạy backend.
+5. Ở thư mục gốc, chạy `npm install` rồi `npm start`.
+
+Android Emulator tự dùng `http://10.0.2.2:3000/api`; iOS Simulator và web tự dùng `http://localhost:3000/api` nếu không đặt `EXPO_PUBLIC_API_URL`.
+
+## API
+
+Health check: `GET /api/health`. Các nhóm API xác thực, ví, danh mục, giao dịch, thống kê, ngân sách và mục tiêu tiết kiệm nằm trong `backend/duongdan`.
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 

@@ -1,18 +1,3 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
-
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
-
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
-  );
-}
+import { Stack } from 'expo-router';import { StatusBar } from 'expo-status-bar';import { ActivityIndicator,View } from 'react-native';import { AuthProvider,useAuth } from '@/ngucanh/AuthContext';import { Colors } from '@/hangso/colors';
+function Navigator(){const {user,loading}=useAuth();if(loading)return <View style={{flex:1,alignItems:'center',justifyContent:'center',backgroundColor:Colors.background}}><ActivityIndicator size="large" color={Colors.primary}/></View>;return <><StatusBar style="dark"/><Stack screenOptions={{headerShown:false,contentStyle:{backgroundColor:Colors.background}}}><Stack.Protected guard={!user}><Stack.Screen name="(auth)"/></Stack.Protected><Stack.Protected guard={!!user}><Stack.Screen name="(tabs)"/><Stack.Screen name="giaodich"/><Stack.Screen name="vitien"/><Stack.Screen name="danhmuc"/><Stack.Screen name="ngansach"/><Stack.Screen name="tietkiem"/><Stack.Screen name="canhan"/></Stack.Protected></Stack></>}
+export default function RootLayout(){return <AuthProvider><Navigator/></AuthProvider>}

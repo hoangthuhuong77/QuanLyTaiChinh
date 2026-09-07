@@ -1,0 +1,6 @@
+require('dotenv').config();
+const express=require('express');const cors=require('cors');const pool=require('./cauhinh/database');const auth=require('./trunggian/authMiddleware');const {notFound,errorHandler}=require('./trunggian/errorMiddleware');
+if(!process.env.JWT_SECRET){console.error('Thiếu JWT_SECRET trong file .env.');process.exit(1);}
+const app=express();app.use(cors());app.use(express.json({limit:'100kb'}));app.get('/api/health',async(_req,res,next)=>{try{await pool.query('SELECT 1');res.json({status:'ok'});}catch(e){next(e);}});
+app.use('/api/auth',require('./duongdan/authRoutes'));app.use('/api/wallets',auth,require('./duongdan/walletRoutes'));app.use('/api/categories',auth,require('./duongdan/categoryRoutes'));app.use('/api/transactions',auth,require('./duongdan/transactionRoutes'));app.use('/api/budgets',auth,require('./duongdan/budgetRoutes'));app.use('/api/statistics',auth,require('./duongdan/statisticsRoutes'));app.use('/api/savings-goals',auth,require('./duongdan/savingsGoalRoutes'));app.use(notFound);app.use(errorHandler);
+const port=Number(process.env.PORT||3000);app.listen(port,'0.0.0.0',()=>console.log(`API đang chạy tại http://0.0.0.0:${port}`));

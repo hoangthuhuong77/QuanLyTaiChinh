@@ -1,0 +1,1 @@
+import { Header,Screen } from '@/thanhphan/dungchung/UI';import { CategoryForm } from '@/thanhphan/danhmuc/CategoryForm';export default function Add(){return <Screen><Header title="Thêm danh mục"/><CategoryForm/></Screen>}

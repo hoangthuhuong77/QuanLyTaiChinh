@@ -1,0 +1,1 @@
+import { Header,Screen } from '@/thanhphan/dungchung/UI';import { BudgetForm } from '@/thanhphan/ngansach/BudgetForm';export default function Add(){return <Screen><Header title="Tạo ngân sách"/><BudgetForm/></Screen>}

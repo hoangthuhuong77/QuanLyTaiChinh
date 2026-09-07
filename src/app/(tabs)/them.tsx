@@ -1,0 +1,1 @@
+import { Header,Screen } from '@/thanhphan/dungchung/UI';import { TransactionForm } from '@/thanhphan/giaodich/TransactionForm';export default function AddTransaction(){return <Screen><Header title="Thêm giao dịch" subtitle="Ghi lại khoản thu hoặc chi mới"/><TransactionForm/></Screen>}

@@ -1,0 +1,1 @@
+import { Header,Screen } from '@/thanhphan/dungchung/UI';import { WalletForm } from '@/thanhphan/vitien/WalletForm';export default function Add(){return <Screen><Header title="Thêm ví"/><WalletForm/></Screen>}
