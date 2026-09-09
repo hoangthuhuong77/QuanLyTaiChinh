@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const pool = require('../cauhinh/database');
 const { requireFields } = require('../tienich/validation');
 
-const publicUser = (user) => ({ id: user.id, full_name: user.full_name, email: user.email, username: user.username, phone: user.phone, created_at: user.created_at });
+const publicUser = (user) => ({ id: user.id, full_name: user.full_name, email: user.email, username: user.username, phone: user.phone, avatar_url: user.avatar_url, created_at: user.created_at });
 
 async function register(req, res, next) {
   const connection = await pool.getConnection();
@@ -17,8 +17,10 @@ async function register(req, res, next) {
     const [result] = await connection.query('INSERT INTO users (full_name, email, username, password, phone) VALUES (?, ?, ?, ?, ?)', [req.body.full_name.trim(), req.body.email.trim().toLowerCase(), req.body.username.trim(), password, req.body.phone?.trim() || null]);
     const defaults = [
       ['Ăn uống', 'expense', '🍜'], ['Di chuyển', 'expense', '🛵'], ['Mua sắm', 'expense', '🛍️'],
-      ['Giải trí', 'expense', '🎬'], ['Sức khỏe', 'expense', '💊'], ['Hóa đơn', 'expense', '🧾'],
-      ['Lương', 'income', '💼'], ['Làm thêm', 'income', '💻'], ['Thưởng', 'income', '🎁'], ['Kinh doanh', 'income', '📈'],
+      ['Giải trí', 'expense', '🎬'], ['Học tập', 'expense', '📚'], ['Sức khỏe', 'expense', '💊'],
+      ['Nhà ở', 'expense', '🏠'], ['Hóa đơn', 'expense', '🧾'], ['Khác', 'expense', '📌'],
+      ['Lương', 'income', '💼'], ['Làm thêm', 'income', '💻'], ['Thưởng', 'income', '🎁'],
+      ['Kinh doanh', 'income', '📈'], ['Gia đình hỗ trợ', 'income', '🤝'], ['Khác', 'income', '📌'],
     ];
     await connection.query('INSERT INTO categories (user_id, name, type, icon) VALUES ?', [defaults.map((item) => [result.insertId, ...item])]);
     const [rows] = await connection.query('SELECT * FROM users WHERE id = ?', [result.insertId]);
@@ -43,13 +45,14 @@ async function login(req, res, next) {
 }
 
 async function profile(req, res, next) {
-  try { const [rows] = await pool.query('SELECT id, full_name, email, username, phone, created_at FROM users WHERE id = ?', [req.user.id]); res.json(rows[0]); } catch (error) { next(error); }
+  try { const [rows] = await pool.query('SELECT id, full_name, email, username, phone, avatar_url, created_at FROM users WHERE id = ?', [req.user.id]); res.json(rows[0]); } catch (error) { next(error); }
 }
 
 async function updateProfile(req, res, next) {
   try {
     requireFields(req.body, ['full_name', 'email', 'username']);
-    await pool.query('UPDATE users SET full_name=?, email=?, username=?, phone=? WHERE id=?', [req.body.full_name.trim(), req.body.email.trim().toLowerCase(), req.body.username.trim(), req.body.phone?.trim() || null, req.user.id]);
+    if (req.body.avatar_url && (!String(req.body.avatar_url).startsWith('data:image/') || String(req.body.avatar_url).length > 4000000)) { const error = new Error('Ảnh đại diện không hợp lệ hoặc quá lớn.'); error.status = 400; throw error; }
+    await pool.query('UPDATE users SET full_name=?, email=?, username=?, phone=?, avatar_url=? WHERE id=?', [req.body.full_name.trim(), req.body.email.trim().toLowerCase(), req.body.username.trim(), req.body.phone?.trim() || null, req.body.avatar_url || null, req.user.id]);
     return profile(req, res, next);
   } catch (error) { next(error); }
 }

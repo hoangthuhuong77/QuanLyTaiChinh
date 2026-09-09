@@ -11,8 +11,8 @@ function Choice({ selected, label, onPress }: { selected:boolean; label:string; 
   return <Pressable onPress={onPress} style={{ paddingHorizontal:14, paddingVertical:11, borderRadius:12, borderWidth:1, borderColor:selected ? Colors.primary : Colors.border, backgroundColor:selected ? Colors.primarySoft : Colors.surface }}><Text style={{ color:selected ? Colors.primary : Colors.text, fontWeight:'700' }}>{label}</Text></Pressable>;
 }
 
-export function TransactionForm({ initial }: { initial?:Transaction }) {
-  const [type, setType] = useState<TransactionType>(initial?.type || 'expense');
+export function TransactionForm({ initial, defaultType='expense' }: { initial?:Transaction; defaultType?:TransactionType }) {
+  const [type, setType] = useState<TransactionType>(initial?.type || defaultType);
   const [amount, setAmount] = useState(initial ? String(initial.amount) : '');
   const [description, setDescription] = useState(initial?.description || '');
   const [date, setDate] = useState(initial?.transaction_date?.slice(0, 10) || today());

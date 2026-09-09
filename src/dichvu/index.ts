@@ -1,6 +1,8 @@
 import { api } from './api';
-import type { AuthResponse,Budget,Category,CategoryStatistic,MonthlyStatistic,Overview,SavingsGoal,Transaction,User,Wallet } from '@/kieudulieu';
+import type { AuthResponse,Budget,Category,CategoryStatistic,MonthlyStatistic,NotificationResponse,Overview,SavingsGoal,Transaction,Transfer,User,Wallet } from '@/kieudulieu';
 export const authService={register:(data:object)=>api.post<AuthResponse>('/auth/register',data),login:(data:object)=>api.post<AuthResponse>('/auth/login',data),profile:()=>api.get<User>('/auth/profile'),updateProfile:(data:object)=>api.put<User>('/auth/profile',data),changePassword:(data:object)=>api.put('/auth/change-password',data)};
 const crud=<T>(path:string)=>({list:(params?:object)=>api.get<T[]>(path,{params}),detail:(id:string|number)=>api.get<T>(`${path}/${id}`),create:(data:object)=>api.post<T>(path,data),update:(id:string|number,data:object)=>api.put<T>(`${path}/${id}`,data),remove:(id:string|number)=>api.delete(`${path}/${id}`)});
 export const walletService=crud<Wallet>('/wallets');export const categoryService=crud<Category>('/categories');export const transactionService=crud<Transaction>('/transactions');export const budgetService=crud<Budget>('/budgets');export const savingsService=crud<SavingsGoal>('/savings-goals');
+export const transferService={list:()=>api.get<Transfer[]>('/transfers'),create:(data:object)=>api.post('/transfers',data)};
+export const notificationService={list:()=>api.get<NotificationResponse>('/notifications'),markRead:(id:number)=>api.put(`/notifications/${id}/read`),markAllRead:()=>api.put('/notifications/read-all'),remove:(id:number)=>api.delete(`/notifications/${id}`)};
 export const statisticsService={overview:(params?:object)=>api.get<Overview>('/statistics/overview',{params}),category:(params?:object)=>api.get<CategoryStatistic[]>('/statistics/category',{params}),monthly:(year?:number)=>api.get<MonthlyStatistic[]>('/statistics/monthly',{params:{year}})};
