@@ -1,3 +1,4 @@
+// Xu ly vitien.
 const pool = require('../cauhinh/database');
 const { requireFields } = require('../tienich/validation');
 

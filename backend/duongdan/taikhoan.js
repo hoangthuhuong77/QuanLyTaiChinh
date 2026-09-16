@@ -1,0 +1,2 @@
+const router=require('express').Router();const c=require('../dieukhien/taikhoan');const auth=require('../trunggian/authMiddleware');router.post('/register',c.register);router.post('/login',c.login);router.get('/profile',auth,c.profile);router.put('/profile',auth,c.updateProfile);router.put('/change-password',auth,c.changePassword);router.post('/dangky',c.register);router.post('/dangnhap',c.login);router.get('/hoso',auth,c.profile);router.put('/hoso',auth,c.updateProfile);router.put('/doimatkhau',auth,c.changePassword);module.exports=router;
+// Duong dan API taikhoan.

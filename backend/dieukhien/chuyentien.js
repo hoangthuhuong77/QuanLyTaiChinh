@@ -1,3 +1,4 @@
+// Xu ly chuyentien.
 const pool = require('../cauhinh/database');
 const { requireFields, positiveMoney } = require('../tienich/validation');
 

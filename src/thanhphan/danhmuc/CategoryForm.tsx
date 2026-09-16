@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import type { Category, TransactionType } from '@/kieudulieu';
 import { categoryService } from '@/dichvu';
 import { Button, Card, Field } from '@/thanhphan/dungchung/UI';
 import { Colors } from '@/hangso/colors';
 import { apiMessage } from '@/tienich/dinhdang';
+import { showMessage } from '@/tienich/thongdiep';
 
 const icons = ['🍜', '🛵', '🛍️', '🎮', '📚', '🏥', '🏠', '🧾', '💼', '💻', '🎁', '💰', '👨‍👩‍👧', '📌'];
 
@@ -13,9 +14,9 @@ export function CategoryForm({ initial }: { initial?: Category }) {
   const [name, setName] = useState(initial?.name || ''); const [type, setType] = useState<TransactionType>(initial?.type || 'expense');
   const [icon, setIcon] = useState(initial?.icon || '📌'); const [saving, setSaving] = useState(false);
   const submit = async () => {
-    if (!name.trim()) return Alert.alert('Thiếu tên', 'Vui lòng nhập tên danh mục.');
-    try { setSaving(true); const data = { name: name.trim(), type, icon }; if (initial) await categoryService.update(initial.id, data); else await categoryService.create(data); Alert.alert('Thành công', 'Đã lưu danh mục.'); router.back(); }
-    catch (error) { Alert.alert('Lỗi', apiMessage(error)); } finally { setSaving(false); }
+    if (!name.trim()) return showMessage('Thiếu tên', 'Vui lòng nhập tên danh mục.');
+    try { setSaving(true); const data = { name: name.trim(), type, icon }; if (initial) await categoryService.update(initial.id, data); else await categoryService.create(data); showMessage('Thành công', 'Đã lưu danh mục.'); router.back(); }
+    catch (error) { showMessage('Lỗi', apiMessage(error)); } finally { setSaving(false); }
   };
   return <Card style={{ gap: 14 }}>
     <Field label="Tên danh mục" value={name} onChangeText={setName} placeholder="Ví dụ: Ăn uống" />

@@ -1,3 +1,4 @@
+// Xu ly ngansach.
 const pool=require('../cauhinh/database');const {requireFields,positiveMoney}=require('../tienich/validation');
 const select=`SELECT b.*,c.name category_name,c.icon,COALESCE(SUM(t.amount),0) spent FROM budgets b JOIN categories c ON c.id=b.category_id LEFT JOIN transactions t ON t.category_id=b.category_id AND t.user_id=b.user_id AND t.type='expense' AND MONTH(t.transaction_date)=b.month AND YEAR(t.transaction_date)=b.year WHERE b.user_id=?`;
 async function list(req,res,next){try{const [rows]=await pool.query(`${select} GROUP BY b.id ORDER BY b.year DESC,b.month DESC`,[req.user.id]);res.json(rows.map(x=>({...x,remaining:Number(x.amount_limit)-Number(x.spent),progress:Number(x.amount_limit)?Number(x.spent)/Number(x.amount_limit)*100:0})));}catch(e){next(e);}}

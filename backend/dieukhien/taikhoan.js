@@ -1,3 +1,4 @@
+// Xu ly tai khoan nguoi dung.
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../cauhinh/database');

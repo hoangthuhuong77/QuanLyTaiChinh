@@ -1,3 +1,4 @@
+// Xu ly giaodich.
 const pool=require('../cauhinh/database'); const {requireFields,positiveMoney,assertType}=require('../tienich/validation');
 const delta=(type,amount)=>type==='income'?amount:-amount;
 async function createBudgetAlerts(conn,userId,categoryId,transactionDate){

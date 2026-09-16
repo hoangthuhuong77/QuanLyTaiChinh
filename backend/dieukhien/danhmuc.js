@@ -1,3 +1,4 @@
+// Xu ly danhmuc.
 const pool=require('../cauhinh/database'); const {requireFields,assertType}=require('../tienich/validation');
 async function list(req,res,next){try{const params=[req.user.id];let sql='SELECT * FROM categories WHERE user_id=?';if(req.query.type){assertType(req.query.type);sql+=' AND type=?';params.push(req.query.type);}sql+=' ORDER BY type,name';const [rows]=await pool.query(sql,params);res.json(rows);}catch(e){next(e);}}
 async function create(req,res,next){try{requireFields(req.body,['name','type']);assertType(req.body.type);const [r]=await pool.query('INSERT INTO categories (user_id,name,type,icon) VALUES (?,?,?,?)',[req.user.id,req.body.name.trim(),req.body.type,req.body.icon||null]);const [rows]=await pool.query('SELECT * FROM categories WHERE id=?',[r.insertId]);res.status(201).json(rows[0]);}catch(e){next(e);}}

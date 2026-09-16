@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Alert, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import type { Wallet } from '@/kieudulieu';
 import { Button, Card, Field } from '@/thanhphan/dungchung/UI';
 import { walletService } from '@/dichvu';
 import { Colors } from '@/hangso/colors';
 import { apiMessage } from '@/tienich/dinhdang';
+import { showMessage } from '@/tienich/thongdiep';
 
 const walletTypes = [
   { value: 'cash', label: 'Tiền mặt', icon: '💵' }, { value: 'bank', label: 'Ngân hàng', icon: '🏦' },
@@ -19,13 +20,13 @@ export function WalletForm({ initial }: { initial?: Wallet }) {
   const [description, setDescription] = useState(initial?.description || '');
   const [saving, setSaving] = useState(false);
   const submit = async () => {
-    if (!name.trim() || (!initial && !Number.isFinite(Number(balance)))) return Alert.alert('Dữ liệu chưa hợp lệ', 'Nhập tên ví và số dư hợp lệ.');
+    if (!name.trim() || (!initial && !Number.isFinite(Number(balance)))) return showMessage('Dữ liệu chưa hợp lệ', 'Nhập tên ví và số dư hợp lệ.');
     try {
       setSaving(true);
       const data = { name: name.trim(), type, initial_balance: Number(balance), description };
       if (initial) await walletService.update(initial.id, data); else await walletService.create(data);
-      Alert.alert('Thành công', 'Đã lưu ví tiền.'); router.back();
-    } catch (error) { Alert.alert('Lỗi', apiMessage(error)); } finally { setSaving(false); }
+      showMessage('Thành công', 'Đã lưu ví tiền.'); router.back();
+    } catch (error) { showMessage('Lỗi', apiMessage(error)); } finally { setSaving(false); }
   };
   return <Card style={{ gap: 14 }}>
     <Field label="Tên ví" value={name} onChangeText={setName} placeholder="Ví dụ: Vietcombank" />

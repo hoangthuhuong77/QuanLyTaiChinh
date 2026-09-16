@@ -1,3 +1,4 @@
+// Xu ly thongbao.
 const pool = require('../cauhinh/database');
 
 async function list(req, res, next) {

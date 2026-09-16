@@ -16,6 +16,12 @@ Android Emulator tự dùng `http://10.0.2.2:3000/api`; iOS Simulator và web t�
 
 Health check: `GET /api/health`. Các nhóm API xác thực, ví, danh mục, giao dịch, thống kê, ngân sách và mục tiêu tiết kiệm nằm trong `backend/duongdan`.
 
+Trang Swagger: `http://localhost:3000/api/docs/`. Swagger liệt kê toàn bộ API và có nút **Try it out** để xem dữ liệu thật. Để xem dữ liệu cá nhân, gọi `POST /api/dangnhap` bằng tài khoản của bạn, sao chép `token` trong phản hồi, bấm **Authorize**, dán token (không thêm `Bearer`), rồi thử các lệnh `GET`. Các lệnh `POST`, `PUT`, `DELETE` sẽ thay đổi dữ liệu thật, nên chỉ dùng khi bạn muốn tạo/sửa/xóa. Đặc tả OpenAPI dạng JSON nằm ở `GET /api/openapi.json`.
+
+Địa chỉ hiển thị trên Swagger dùng tiếng Việt không dấu cho dễ đọc: ví dụ `POST /api/dangnhap`, `GET /api/giaodich`, `GET /api/vitien`. Các địa chỉ tiếng Anh cũ vẫn hoạt động để app mobile không bị ảnh hưởng. Tên trường JSON như `login`, `password`, `amount` chưa đổi vì app đang dùng chúng.
+
+Trong `backend/duongdan` và `backend/dieukhien`, tên file cũng dùng tiếng Việt không dấu như `taikhoan.js`, `giaodich.js`, `vitien.js`, `ngansach.js`. Hai thư mục có file cùng tên: `duongdan` khai báo địa chỉ API, còn `dieukhien` xử lý dữ liệu.
+
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started

@@ -1,1 +1,0 @@
-const router=require('express').Router();const c=require('../dieukhien/authController');const auth=require('../trunggian/authMiddleware');router.post('/register',c.register);router.post('/login',c.login);router.get('/profile',auth,c.profile);router.put('/profile',auth,c.updateProfile);router.put('/change-password',auth,c.changePassword);module.exports=router;
