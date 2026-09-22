@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const pool = require('../cauhinh/database');
 const { requireFields } = require('../tienich/validation');
 
-const publicUser = (user) => ({ id: user.id, full_name: user.full_name, email: user.email, username: user.username, phone: user.phone, avatar_url: user.avatar_url, created_at: user.created_at });
+const publicUser = (user) => ({ id: user.id, full_name: user.full_name, email: user.email, username: user.username, phone: user.phone, avatar_url: user.avatar_url, role: user.role || 'user', status: user.status || 'active', created_at: user.created_at });
 
 async function register(req, res, next) {
   const connection = await pool.getConnection();
@@ -16,18 +16,20 @@ async function register(req, res, next) {
     const password = await bcrypt.hash(req.body.password, 12);
     await connection.beginTransaction();
     const [result] = await connection.query('INSERT INTO users (full_name, email, username, password, phone) VALUES (?, ?, ?, ?, ?)', [req.body.full_name.trim(), req.body.email.trim().toLowerCase(), req.body.username.trim(), password, req.body.phone?.trim() || null]);
-    const defaults = [
+    const fallbackDefaults = [
       ['Ăn uống', 'expense', '🍜'], ['Di chuyển', 'expense', '🛵'], ['Mua sắm', 'expense', '🛍️'],
       ['Giải trí', 'expense', '🎬'], ['Học tập', 'expense', '📚'], ['Sức khỏe', 'expense', '💊'],
       ['Nhà ở', 'expense', '🏠'], ['Hóa đơn', 'expense', '🧾'], ['Khác', 'expense', '📌'],
       ['Lương', 'income', '💼'], ['Làm thêm', 'income', '💻'], ['Thưởng', 'income', '🎁'],
       ['Kinh doanh', 'income', '📈'], ['Gia đình hỗ trợ', 'income', '🤝'], ['Khác', 'income', '📌'],
     ];
+    const [systemCategories] = await connection.query('SELECT name, type, icon FROM system_categories ORDER BY type, name');
+    const defaults = systemCategories.length ? systemCategories.map((item) => [item.name, item.type, item.icon]) : fallbackDefaults;
     await connection.query('INSERT INTO categories (user_id, name, type, icon) VALUES ?', [defaults.map((item) => [result.insertId, ...item])]);
     const [rows] = await connection.query('SELECT * FROM users WHERE id = ?', [result.insertId]);
     await connection.commit();
     const user = publicUser(rows[0]);
-    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
     res.status(201).json({ token, user });
   } catch (error) { await connection.rollback(); next(error); }
   finally { connection.release(); }
@@ -38,15 +40,15 @@ async function login(req, res, next) {
     requireFields(req.body, ['login', 'password']);
     const [rows] = await pool.query('SELECT * FROM users WHERE email = ? OR username = ? LIMIT 1', [req.body.login.trim().toLowerCase(), req.body.login.trim()]);
     const userRow = rows[0];
-    if (!userRow || !(await bcrypt.compare(req.body.password, userRow.password))) { const error = new Error('Thông tin đăng nhập không chính xác.'); error.status = 401; throw error; }
+    if (!userRow || userRow.status === 'locked' || !(await bcrypt.compare(req.body.password, userRow.password))) { const error = new Error('Thông tin đăng nhập không chính xác hoặc tài khoản đã bị khóa.'); error.status = 401; throw error; }
     const user = publicUser(userRow);
-    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ id: user.id, username: user.username, role: userRow.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
     res.json({ token, user });
   } catch (error) { next(error); }
 }
 
 async function profile(req, res, next) {
-  try { const [rows] = await pool.query('SELECT id, full_name, email, username, phone, avatar_url, created_at FROM users WHERE id = ?', [req.user.id]); res.json(rows[0]); } catch (error) { next(error); }
+  try { const [rows] = await pool.query('SELECT id, full_name, email, username, phone, avatar_url, role, status, created_at FROM users WHERE id = ?', [req.user.id]); res.json(rows[0]); } catch (error) { next(error); }
 }
 
 async function updateProfile(req, res, next) {

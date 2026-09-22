@@ -1,5 +1,5 @@
 export type TransactionType = 'income' | 'expense';
-export interface User { id:number; full_name:string; email:string; username:string; phone?:string|null; avatar_url?:string|null; created_at:string }
+export interface User { id:number; full_name:string; email:string; username:string; phone?:string|null; avatar_url?:string|null; role?:'user'|'admin'; status?:'active'|'locked'; created_at:string }
 export interface AuthResponse { token:string; user:User }
 export interface Wallet { id:number; name:string; type:string; initial_balance:number; current_balance:number; description?:string; created_at:string }
 export interface Category { id:number; name:string; type:TransactionType; icon?:string; created_at:string }
@@ -12,3 +12,8 @@ export interface MonthlyStatistic { month:number; income:number; expense:number 
 export interface Transfer { id:number; from_wallet_id:number; to_wallet_id:number; from_wallet_name:string; to_wallet_name:string; amount:number; description?:string; transfer_date:string; created_at:string }
 export interface AppNotification { id:number; type:string; title:string; message:string; is_read:boolean|number; created_at:string }
 export interface NotificationResponse { items:AppNotification[]; unread_count:number }
+export interface AdminDashboard { total_users:number; new_users:number; active_users:number; total_transactions:number; total_wallets:number; total_categories:number }
+export interface AdminUser extends User { updated_at?:string }
+export interface AdminUsersResponse { items:AdminUser[]; page:number; limit:number; total:number; total_pages:number }
+export interface AdminStatistics { total_users:number; total_transactions:number; new_users_30_days:number; monthly_users:{month:string;users:number}[]; monthly_transactions:{month:string;transactions:number}[] }
+export interface AdminFeedback { id:number; user_id:number; type:'bug'|'suggestion'|'support'; subject:string; message:string; status:'pending'|'processing'|'resolved'; admin_reply?:string|null; full_name:string; email:string; username:string; created_at:string }
