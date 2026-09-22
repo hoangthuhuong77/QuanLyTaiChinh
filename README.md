@@ -22,6 +22,15 @@ npm.cmd run dev
 
 Sau đó mở `http://localhost:5173`. Tài khoản đăng nhập phải có quyền `admin`; tài khoản người dùng thường sẽ không được vào trang này.
 
+Khi backend chạy lần đầu, hệ thống tự tạo tài khoản Admin mặc định nếu tài khoản này chưa tồn tại:
+
+```text
+Tên đăng nhập: huong
+Mật khẩu: 12345678
+```
+
+Có thể đổi thông tin khởi tạo bằng các biến `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_EMAIL` và `ADMIN_FULL_NAME` trong `backend/.env`. Nếu Admin đã tồn tại thì backend không đặt lại mật khẩu, nên việc đổi mật khẩu trong Web Admin vẫn được giữ nguyên.
+
 Web Admin có: Dashboard, quản lý người dùng, danh mục mặc định, thông báo hệ thống, phản hồi/hỗ trợ, thống kê, cập nhật tài khoản và quản lý phiên đăng nhập. Admin không được xem mật khẩu, token hoặc chi tiết tiền riêng của từng người dùng.
 
 ## Chạy ứng dụng người dùng trên điện thoại
