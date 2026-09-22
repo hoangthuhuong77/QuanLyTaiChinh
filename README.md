@@ -1,6 +1,39 @@
 # Ứng dụng Quản lý Tài chính Cá nhân
 
-Ứng dụng đa nền tảng dùng Expo SDK 57, TypeScript và Expo Router; backend REST dùng Express, MySQL, JWT và bcryptjs.
+Ứng dụng gồm ba phần độc lập:
+
+- `admin-web`: trang quản trị chạy trên trình duyệt bằng ReactJS và Vite.
+- `src`: ứng dụng người dùng chạy trên điện thoại bằng Expo/React Native.
+- `backend`: API dùng chung chạy bằng Express.js, MySQL và JWT.
+
+## Chạy trang quản trị
+
+Mở hai Terminal:
+
+```powershell
+# Terminal 1: API và MySQL
+cd D:\quanlytaichinh\thu-huong\backend
+npm.cmd run dev
+
+# Terminal 2: Web Admin
+cd D:\quanlytaichinh\thu-huong\admin-web
+npm.cmd run dev
+```
+
+Sau đó mở `http://localhost:5173`. Tài khoản đăng nhập phải có quyền `admin`; tài khoản người dùng thường sẽ không được vào trang này.
+
+Web Admin có: Dashboard, quản lý người dùng, danh mục mặc định, thông báo hệ thống, phản hồi/hỗ trợ, thống kê, cập nhật tài khoản và quản lý phiên đăng nhập. Admin không được xem mật khẩu, token hoặc chi tiết tiền riêng của từng người dùng.
+
+## Chạy ứng dụng người dùng trên điện thoại
+
+Sau khi backend đang chạy, mở Terminal thứ ba:
+
+```powershell
+cd D:\quanlytaichinh\thu-huong
+npx.cmd expo start --tunnel
+```
+
+Mở Expo Go trên điện thoại và quét mã QR. Phần Admin cũ đã được loại khỏi ứng dụng điện thoại vì Admin chỉ chạy trên web.
 
 ## Chạy hệ thống
 

@@ -1,6 +1,7 @@
 // Xu ly tai khoan nguoi dung.
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const pool = require('../cauhinh/database');
 const { requireFields } = require('../tienich/validation');
 
@@ -43,6 +44,13 @@ async function login(req, res, next) {
     if (!userRow || userRow.status === 'locked' || !(await bcrypt.compare(req.body.password, userRow.password))) { const error = new Error('Thông tin đăng nhập không chính xác hoặc tài khoản đã bị khóa.'); error.status = 401; throw error; }
     const user = publicUser(userRow);
     const token = jwt.sign({ id: user.id, username: user.username, role: userRow.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    if (user.role === 'admin') {
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+      await pool.query(
+        'INSERT INTO admin_sessions (user_id,token_hash,ip_address,user_agent,expires_at) VALUES (?,?,?,?,DATE_ADD(NOW(), INTERVAL 7 DAY))',
+        [user.id, tokenHash, req.ip || null, String(req.get('user-agent') || '').slice(0, 500) || null],
+      );
+    }
     res.json({ token, user });
   } catch (error) { next(error); }
 }
@@ -67,6 +75,9 @@ async function changePassword(req, res, next) {
     const [rows] = await pool.query('SELECT password FROM users WHERE id = ?', [req.user.id]);
     if (!rows[0] || !(await bcrypt.compare(req.body.current_password, rows[0].password))) { const error = new Error('Mật khẩu hiện tại không đúng.'); error.status = 400; throw error; }
     await pool.query('UPDATE users SET password=? WHERE id=?', [await bcrypt.hash(req.body.new_password, 12), req.user.id]);
+    if (req.user.role === 'admin') {
+      await pool.query('UPDATE admin_sessions SET revoked_at=NOW() WHERE user_id=? AND id<>? AND revoked_at IS NULL', [req.user.id, req.sessionId || 0]);
+    }
     res.json({ message: 'Đổi mật khẩu thành công.' });
   } catch (error) { next(error); }
 }

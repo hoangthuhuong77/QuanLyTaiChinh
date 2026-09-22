@@ -78,6 +78,35 @@ const paths = {
   '/api/notifications/{id}': { delete: secured('Thông báo', 'Xóa thông báo', { parameters: [id], responses: { '204': noContent, '404': { description: 'Không tìm thấy thông báo' } } }) },
 };
 
+Object.assign(paths, {
+  '/api/admin/dashboard': { get: secured('Quản trị', 'Xem tổng quan hệ thống', { responses: { '200': response({ type: 'object' }) } }) },
+  '/api/admin/statistics': { get: secured('Quản trị', 'Xem thống kê tăng trưởng hệ thống', { responses: { '200': response({ type: 'object' }) } }) },
+  '/api/admin/users': { get: secured('Quản trị', 'Tìm kiếm và xem danh sách người dùng', { parameters: [param('search', 'query', 'Họ tên, email hoặc username'), param('status', 'query', 'Trạng thái tài khoản'), param('page', 'query', 'Trang', { type: 'integer' })], responses: { '200': response({ type: 'object' }) } }) },
+  '/api/admin/users/{id}': {
+    get: secured('Quản trị', 'Xem thông tin cơ bản của người dùng', { parameters: [id], responses: { '200': response(ref('User')) } }),
+    delete: secured('Quản trị', 'Xóa tài khoản người dùng', { parameters: [id], responses: { '200': message } }),
+  },
+  '/api/admin/users/{id}/status': { patch: secured('Quản trị', 'Khóa hoặc mở khóa người dùng', { parameters: [id], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['status'], properties: { status: { type: 'string', enum: ['active', 'locked'] } } } } } }, responses: { '200': message } }) },
+  '/api/admin/categories': {
+    get: secured('Quản trị', 'Xem danh mục mặc định', { responses: { '200': response(arrayOf('Category')) } }),
+    post: secured('Quản trị', 'Thêm danh mục mặc định', { requestBody: body('CategoryInput'), responses: { '201': message } }),
+  },
+  '/api/admin/categories/{id}': {
+    put: secured('Quản trị', 'Sửa danh mục mặc định', { parameters: [id], requestBody: body('CategoryInput'), responses: { '200': message } }),
+    delete: secured('Quản trị', 'Xóa danh mục mặc định', { parameters: [id], responses: { '200': message } }),
+  },
+  '/api/admin/notifications': {
+    get: secured('Quản trị', 'Xem thông báo hệ thống', { responses: { '200': response({ type: 'array', items: { type: 'object' } }) } }),
+    post: secured('Quản trị', 'Tạo thông báo hệ thống', { requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['title', 'message'], properties: { title: { type: 'string' }, message: { type: 'string' }, type: { type: 'string' }, send_now: { type: 'boolean' } } } } } }, responses: { '201': message } }),
+  },
+  '/api/admin/notifications/{id}/send': { post: secured('Quản trị', 'Gửi thông báo tới tất cả người dùng', { parameters: [id], responses: { '200': message } }) },
+  '/api/admin/feedback': { get: secured('Quản trị', 'Xem phản hồi và yêu cầu hỗ trợ', { parameters: [param('status', 'query', 'Lọc trạng thái')], responses: { '200': response({ type: 'array', items: { type: 'object' } }) } }) },
+  '/api/admin/feedback/{id}': { patch: secured('Quản trị', 'Trả lời hoặc cập nhật trạng thái phản hồi', { parameters: [id], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { status: { type: 'string', enum: ['pending', 'processing', 'resolved'] }, admin_reply: { type: 'string' } } } } } }, responses: { '200': message } }) },
+  '/api/admin/sessions': { get: secured('Quản trị', 'Xem các phiên đăng nhập Admin', { responses: { '200': response({ type: 'array', items: { type: 'object' } }) } }) },
+  '/api/admin/sessions/{id}': { delete: secured('Quản trị', 'Đăng xuất một phiên Admin', { parameters: [id], responses: { '200': message } }) },
+  '/api/admin/logout': { post: secured('Quản trị', 'Đăng xuất phiên Admin hiện tại', { responses: { '200': message } }) },
+});
+
 paths['/api/categories'].get.parameters = [param('type', 'query', 'Lọc theo khoản thu hoặc khoản chi', transactionType)];
 paths['/api/transactions'].get.parameters = [
   param('type', 'query', 'Loại giao dịch', transactionType),
@@ -125,7 +154,7 @@ module.exports = {
   openapi: '3.0.3',
   info: { title: 'API Quản lý tài chính cá nhân', version: '1.0.0', description: 'Các địa chỉ API trên trang này dùng tiếng Việt không dấu để dễ đọc. Địa chỉ tiếng Anh cũ vẫn chạy cho app mobile. Dữ liệu trả về từ MySQL thật khi bấm Try it out → Execute. Cách xem: 1) POST /api/dangnhap; 2) sao chép token; 3) bấm Authorize và dán token, không thêm chữ Bearer; 4) mở các GET để xem ví, giao dịch, ngân sách, mục tiêu, thống kê. Mỗi tài khoản chỉ xem được dữ liệu của mình. Tránh bấm POST/PUT/DELETE nếu chỉ muốn xem.' },
   servers: [{ url: '/', description: 'Backend hiện tại' }],
-  tags: ['Hệ thống', 'Tài khoản', 'Ví tiền', 'Danh mục', 'Giao dịch', 'Chuyển tiền', 'Ngân sách', 'Mục tiêu tiết kiệm', 'Thống kê', 'Thông báo'].map(name => ({ name })),
+  tags: ['Hệ thống', 'Tài khoản', 'Ví tiền', 'Danh mục', 'Giao dịch', 'Chuyển tiền', 'Ngân sách', 'Mục tiêu tiết kiệm', 'Thống kê', 'Thông báo', 'Quản trị'].map(name => ({ name })),
   paths,
   components: { securitySchemes: { bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', description: 'Dán token nhận từ POST /api/dangnhap, không thêm Bearer.' } }, schemas },
 };

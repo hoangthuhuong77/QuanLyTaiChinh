@@ -18,8 +18,13 @@ router.delete('/categories/:id', controller.removeCategory);
 router.get('/notifications', controller.listNotifications);
 router.post('/notifications', controller.createNotification);
 router.put('/notifications/:id', controller.updateNotification);
+router.post('/notifications/:id/send', controller.sendNotification);
 router.delete('/notifications/:id', controller.removeNotification);
 router.get('/feedback', controller.listFeedback);
 router.patch('/feedback/:id', controller.updateFeedback);
+router.get('/sessions', controller.listSessions);
+router.delete('/sessions/others', controller.revokeOtherSessions);
+router.delete('/sessions/:id', controller.revokeSession);
+router.post('/logout', controller.logout);
 
 module.exports = router;
